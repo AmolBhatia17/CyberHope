@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Shield, Upload, FileText, Users, Settings, Search } from 'lucide-react';
 import { WalletConnect } from './components/WalletConnect';
 import { EvidenceUpload } from './components/EvidenceUpload';
