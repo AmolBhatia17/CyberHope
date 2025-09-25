@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FileText, Eye, Users, Clock, Shield, AlertCircle } from 'lucide-react';
 import { useWallet } from '../hooks/useWallet';
 import { useContract } from '../hooks/useContract';
+import { ManageAccessModal } from './ManageAccessModal';
 
 interface Evidence {
   id: number;
@@ -21,6 +22,8 @@ export const EvidenceList: React.FC = () => {
   const [evidences, setEvidences] = useState<Evidence[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedEvidence, setSelectedEvidence] = useState<Evidence | null>(null);
+  const [isManageAccessOpen, setIsManageAccessOpen] = useState(false);
 
   useEffect(() => {
     if (isConnected && account) {
@@ -36,7 +39,7 @@ export const EvidenceList: React.FC = () => {
 
     try {
       const evidenceIds = await getUserEvidences(account);
-      const evidencePromises = evidenceIds.map(id => getEvidence(id));
+      const evidencePromises = evidenceIds.map((id: number) => getEvidence(id));
       const evidenceData = await Promise.all(evidencePromises);
       setEvidences(evidenceData);
     } catch (err: any) {
@@ -62,10 +65,29 @@ export const EvidenceList: React.FC = () => {
   };
 
   const viewEvidence = (evidence: Evidence) => {
-    if (evidence.hasAccess && evidence.ipfsHash) {
+    // Since we're the owner of the evidence, we always have access
+    if (evidence.ipfsHash) {
       const ipfsUrl = `https://gateway.pinata.cloud/ipfs/${evidence.ipfsHash}`;
       window.open(ipfsUrl, '_blank');
+    } else {
+      // For demo purposes, show a message
+      alert('Evidence file is being processed. Please try again later.');
     }
+  };
+
+  const handleManageAccess = (evidence: Evidence) => {
+    setSelectedEvidence(evidence);
+    setIsManageAccessOpen(true);
+  };
+
+  const handleCloseManageAccess = () => {
+    setIsManageAccessOpen(false);
+    setSelectedEvidence(null);
+  };
+
+  const handleAccessUpdate = () => {
+    // Refresh evidence list to get updated data
+    loadUserEvidences();
   };
 
   if (!isConnected) {
@@ -180,14 +202,18 @@ export const EvidenceList: React.FC = () => {
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() => viewEvidence(evidence)}
-                    disabled={!evidence.hasAccess || !evidence.ipfsHash}
-                    className="flex items-center space-x-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white text-sm rounded transition-colors disabled:cursor-not-allowed"
+                    className="flex items-center space-x-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors"
+                    data-testid={`button-view-${evidence.id}`}
                   >
                     <Eye className="h-4 w-4" />
                     <span>View</span>
                   </button>
                   
-                  <button className="flex items-center space-x-1 px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded transition-colors">
+                  <button 
+                    onClick={() => handleManageAccess(evidence)}
+                    className="flex items-center space-x-1 px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded transition-colors"
+                    data-testid={`button-manage-access-${evidence.id}`}
+                  >
                     <Users className="h-4 w-4" />
                     <span>Manage Access</span>
                   </button>
@@ -197,6 +223,16 @@ export const EvidenceList: React.FC = () => {
           </div>
         ))}
       </div>
+
+      {/* Manage Access Modal */}
+      {selectedEvidence && (
+        <ManageAccessModal
+          evidence={selectedEvidence}
+          isOpen={isManageAccessOpen}
+          onClose={handleCloseManageAccess}
+          onUpdate={handleAccessUpdate}
+        />
+      )}
     </div>
   );
 };

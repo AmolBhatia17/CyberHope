@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { useWallet } from './useWallet';
-import EvidenceStorageABI from '../contracts/EvidenceStorage.json';
 
 // For development, we'll use a mock contract address
 const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || '0x1234567890123456789012345678901234567890';
