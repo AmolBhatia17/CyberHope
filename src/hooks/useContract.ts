@@ -10,7 +10,6 @@ export const useContract = () => {
   const [contract, setContract] = useState<ethers.Contract | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [mockData, setMockData] = useState<any[]>([]);
 
   useEffect(() => {
     if (provider && signer && isConnected) {
@@ -37,7 +36,10 @@ export const useContract = () => {
       // Simulate blockchain transaction
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      const evidenceId = mockData.length + 1;
+      // Get the next evidence ID from localStorage to ensure proper sequencing
+      const stored = localStorage.getItem('evidenceData') || '[]';
+      const evidenceData = JSON.parse(stored);
+      const evidenceId = evidenceData.length > 0 ? Math.max(...evidenceData.map((e: any) => e.id)) + 1 : 1;
       const userAddress = await signer.getAddress();
       
       const newEvidence = {
@@ -53,11 +55,7 @@ export const useContract = () => {
         accessRequests: []
       };
       
-      setMockData(prev => [...prev, newEvidence]);
-      
       // Store in localStorage for persistence
-      const stored = localStorage.getItem('evidenceData') || '[]';
-      const evidenceData = JSON.parse(stored);
       evidenceData.push(newEvidence);
       localStorage.setItem('evidenceData', JSON.stringify(evidenceData));
 
