@@ -4,12 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "npm run build && node server/server.js",
+    "dev": "npm run build && node server/server.cjs",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "server": "cd server && node server.js",
-    "start": "npm run build && node server/server.js"
+    "server": "cd server && node server.cjs",
+    "start": "npm run build && node server/server.cjs"
   },
   "dependencies": {
     "@pinata/sdk": "^2.1.0",
