@@ -201,6 +201,17 @@ export const useContract = () => {
         evidenceData[evidenceIndex].grantedAccess = evidenceData[evidenceIndex].grantedAccess.filter(
           (access: any) => access.address.toLowerCase() !== userAddress.toLowerCase()
         );
+        
+        // Update request status to denied when access is revoked
+        if (evidenceData[evidenceIndex].accessRequests) {
+          const requestIndex = evidenceData[evidenceIndex].accessRequests.findIndex(
+            (req: any) => req.address.toLowerCase() === userAddress.toLowerCase()
+          );
+          if (requestIndex !== -1) {
+            evidenceData[evidenceIndex].accessRequests[requestIndex].status = 'denied';
+          }
+        }
+        
         localStorage.setItem('evidenceData', JSON.stringify(evidenceData));
       }
       
