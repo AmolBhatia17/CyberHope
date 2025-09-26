@@ -34,33 +34,42 @@ export const useContract = () => {
 
     try {
       // Simulate blockchain transaction
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Get the next evidence ID from localStorage to ensure proper sequencing
+      // Find evidence that was already stored by the API service
       const stored = localStorage.getItem('evidenceData') || '[]';
       const evidenceData = JSON.parse(stored);
-      const evidenceId = evidenceData.length > 0 ? Math.max(...evidenceData.map((e: any) => e.id)) + 1 : 1;
-      const userAddress = await signer.getAddress();
+      const evidence = evidenceData.find((e: any) => e.ipfsHash === ipfsHash);
       
-      const newEvidence = {
-        id: evidenceId,
-        victim: userAddress,
-        ipfsHash,
-        encryptedKey,
-        timestamp: Math.floor(Date.now() / 1000),
-        description,
-        isActive: true,
-        hasAccess: true,
-        hasRequested: false,
-        accessRequests: []
-      };
-      
-      // Store in localStorage for persistence
-      evidenceData.push(newEvidence);
-      localStorage.setItem('evidenceData', JSON.stringify(evidenceData));
-
-      setIsLoading(false);
-      return { success: true, txHash: `0x${Math.random().toString(16).substr(2, 64)}`, evidenceId };
+      if (evidence) {
+        // Evidence already stored by API service, just return success
+        setIsLoading(false);
+        return { success: true, txHash: `0x${Math.random().toString(16).substr(2, 64)}`, evidenceId: evidence.id };
+      } else {
+        // Fallback: store evidence if not already stored
+        const evidenceId = evidenceData.length > 0 ? Math.max(...evidenceData.map((e: any) => e.id)) + 1 : 1;
+        const userAddress = await signer.getAddress();
+        
+        const newEvidence = {
+          id: evidenceId,
+          victim: userAddress,
+          ipfsHash,
+          encryptedKey,
+          timestamp: Math.floor(Date.now() / 1000),
+          description,
+          isActive: true,
+          hasAccess: true,
+          hasRequested: false,
+          accessRequests: [],
+          grantedAccess: []
+        };
+        
+        evidenceData.push(newEvidence);
+        localStorage.setItem('evidenceData', JSON.stringify(evidenceData));
+        
+        setIsLoading(false);
+        return { success: true, txHash: `0x${Math.random().toString(16).substr(2, 64)}`, evidenceId };
+      }
     } catch (err: any) {
       console.error('Submit evidence failed:', err);
       setError(err.message || 'Failed to submit evidence');
@@ -81,7 +90,25 @@ export const useContract = () => {
         throw new Error('Evidence not found');
       }
       
-      return evidence;
+      const userAddress = await signer.getAddress();
+      const currentUser = userAddress.toLowerCase();
+      const isOwner = evidence.victim.toLowerCase() === currentUser;
+      
+      // Check if user has granted access
+      const hasGrantedAccess = evidence.grantedAccess?.some((access: any) => 
+        access.address.toLowerCase() === currentUser
+      );
+      
+      // Check if user has pending request
+      const hasRequested = evidence.accessRequests?.some((req: any) => 
+        req.address.toLowerCase() === currentUser && req.status === 'pending'
+      ) || false;
+      
+      return {
+        ...evidence,
+        hasAccess: isOwner || hasGrantedAccess,
+        hasRequested: hasRequested
+      };
     } catch (err: any) {
       console.error('Get evidence failed:', err);
       throw err;

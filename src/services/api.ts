@@ -67,14 +67,40 @@ class ApiService {
 
       return await response.json();
     } catch (error) {
-      // Mock response for demo purposes
+      // Mock response for demo purposes - but still store the evidence properly
       console.warn('API not available, using mock response');
       await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate upload time
       
+      // Get proper global evidence ID from localStorage
+      const stored = localStorage.getItem('evidenceData') || '[]';
+      const evidenceData = JSON.parse(stored);
+      const evidenceId = evidenceData.length > 0 ? Math.max(...evidenceData.map((e: any) => e.id)) + 1 : 1;
+      
+      const ipfsHash = `Qm${Math.random().toString(36).substr(2, 44)}`;
+      const encryptionKey = Math.random().toString(36).substr(2, 32);
+      
+      // Store evidence in localStorage with proper global ID
+      const newEvidence = {
+        id: evidenceId,
+        victim: victimAddress,
+        ipfsHash,
+        encryptedKey: encryptionKey,
+        timestamp: Math.floor(Date.now() / 1000),
+        description,
+        isActive: true,
+        hasAccess: true,
+        hasRequested: false,
+        accessRequests: [],
+        grantedAccess: []
+      };
+      
+      evidenceData.push(newEvidence);
+      localStorage.setItem('evidenceData', JSON.stringify(evidenceData));
+      
       return {
         success: true,
-        ipfsHash: `Qm${Math.random().toString(36).substr(2, 44)}`,
-        encryptionKey: Math.random().toString(36).substr(2, 32),
+        ipfsHash,
+        encryptionKey,
         metadata: {
           name: `Evidence_${Date.now()}`,
           description,
@@ -85,7 +111,7 @@ class ApiService {
           fileSize: file.size,
           encrypted: true
         },
-        pinataResponse: { IpfsHash: `Qm${Math.random().toString(36).substr(2, 44)}` }
+        pinataResponse: { IpfsHash: ipfsHash }
       };
     }
   }
