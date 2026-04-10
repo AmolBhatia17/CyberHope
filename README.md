@@ -1,254 +1,83 @@
 # SecureEvidence - Blockchain Cyberbullying Evidence Storage
 
-A decentralized application for securely storing and managing cyberbullying evidence using blockchain technology, IPFS, and end-to-end encryption.
+SecureEvidence is a decentralized application designed to securely store, manage, and verify cyberbullying evidence using blockchain technology, IPFS (Pinata), and robust encryption.
 
-## Features
+## 🚀 Key Features
 
-- **Blockchain Security**: Evidence metadata stored immutably on Ethereum
-- **IPFS Storage**: Files encrypted and distributed via IPFS using Pinata
-- **MetaMask Integration**: Secure wallet-based authentication
-- **Access Control**: Victim-controlled permission system
-- **End-to-End Encryption**: Files encrypted before upload
-- **Responsive Design**: Modern, accessible interface
+- **Blockchain-Backed Immutability**: All evidence metadata is stored on the Ethereum blockchain, ensuring it cannot be tampered with.
+- **Secure IPFS Storage**: Evidence files are encrypted on the client-side and stored on IPFS via Pinata.
+- **Smart Access Control**: Victims maintain complete control over who can view their evidence.
+- **End-to-End Encryption**: AES-256-GCM encryption ensures data remains private even on decentralized storage.
+- **Transparent Audit Trail**: Every access attempt and permission change is recorded on-chain.
 
-## Technology Stack
+## 🛠 Technology Stack
 
-### Frontend
-- React 18 with TypeScript
-- Tailwind CSS for styling
-- Ethers.js for blockchain interaction
-- Lucide React for icons
+- **Frontend**: React 18, TypeScript, Tailwind CSS, Vite
+- **Backend**: Node.js, Express, Multer
+- **Blockchain**: Solidity, Ethers.js
+- **Storage**: Pinata (IPFS)
+- **Database**: Supabase (Metadata)
 
-### Backend
-- Node.js with Express
-- Pinata SDK for IPFS integration
-- Multer for file handling
-- Crypto for encryption
+## 📋 Prerequisites
 
-### Blockchain
-- Ethereum smart contract
-- Solidity 0.8.19
-- MetaMask for wallet connection
+Before you begin, ensure you have the following installed:
+- [Node.js](https://nodejs.org/) (v18 or higher)
+- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+- [MetaMask](https://metamask.io/) browser extension
+- A local Ethereum network (like [Ganache](https://trufflesuite.com/ganache/) or Hardhat) or a Testnet.
 
-## Setup Instructions
+## ⚙️ Setup & Installation
 
-### Prerequisites
-
-1. **Node.js** (v16 or higher)
-2. **MetaMask** browser extension
-3. **Pinata Account** for IPFS storage
-4. **Ethereum Development Network** (Ganache, Hardhat, or testnet)
-
-### Backend Setup
-
-1. **Environment Configuration**
-   ```bash
-   cp .env.example .env
-   ```
-
-2. **Configure Pinata**
-   - Sign up at [Pinata.cloud](https://pinata.cloud)
-   - Get your API Key and Secret API Key
-   - Update `.env` file:
-   ```
-   PINATA_API_KEY=your_pinata_api_key_here
-   PINATA_SECRET_API_KEY=your_pinata_secret_api_key_here
-   PORT=5000
-   ```
-
-3. **Start Backend Server**
-   ```bash
-   npm run server
-   ```
-
-### Smart Contract Deployment
-
-1. **Install Hardhat** (optional, for local development)
-   ```bash
-   npm install -g hardhat
-   ```
-
-2. **Deploy Contract**
-   - Use Remix IDE: https://remix.ethereum.org/
-   - Copy contract from `contracts/EvidenceStorage.sol`
-   - Deploy to your preferred network
-   - Update `VITE_CONTRACT_ADDRESS` in `.env`
-
-3. **Update Frontend Configuration**
-   ```
-   VITE_CONTRACT_ADDRESS=your_deployed_contract_address
-   VITE_NETWORK_ID=your_network_chain_id
-   VITE_API_URL=http://localhost:5000/api
-   ```
-
-### Frontend Setup
-
-1. **Start Development Server**
-   ```bash
-   npm run dev
-   ```
-
-2. **Connect MetaMask**
-   - Install MetaMask extension
-   - Create or import wallet
-   - Connect to your development network
-   - Ensure you have test ETH for transactions
-
-## Usage Guide
-
-### For Victims (Evidence Submitters)
-
-1. **Connect Wallet**
-   - Click "Connect MetaMask" in the header
-   - Approve connection in MetaMask
-
-2. **Submit Evidence**
-   - Navigate to "Submit Evidence" tab
-   - Select file (max 10MB)
-   - Provide detailed description
-   - Click "Submit Evidence"
-   - Confirm blockchain transaction
-
-3. **Manage Evidence**
-   - View submitted evidence in "My Evidence" tab
-   - Each evidence has a unique blockchain ID
-   - Files are encrypted and stored on IPFS
-
-4. **Control Access**
-   - Grant/revoke access to authorized users
-   - All access changes are recorded on blockchain
-
-### For Authorized Users (Law Enforcement, Legal)
-
-1. **Request Access**
-   - Connect wallet
-   - Enter evidence ID
-   - Submit access request
-   - Wait for victim approval
-
-2. **View Evidence**
-   - Once approved, access evidence files
-   - All access attempts are logged
-   - Evidence cannot be modified
-
-## Security Features
-
-### Encryption
-- Files encrypted with AES-256-GCM before upload
-- Encryption keys stored on blockchain
-- Only authorized users can decrypt
-
-### Blockchain Immutability
-- Evidence metadata cannot be altered
-- All transactions permanently recorded
-- Transparent audit trail
-
-### Access Control
-- Victim has complete control over permissions
-- Permission changes require blockchain transactions
-- Access requests are traceable
-
-### Privacy Protection
-- File contents never exposed publicly
-- IPFS hashes don't reveal file content
-- Encryption ensures data privacy
-
-## API Endpoints
-
-### Evidence Management
-- `POST /api/upload-evidence` - Upload encrypted evidence
-- `GET /api/evidence/:hash` - Retrieve evidence file
-- `GET /api/evidence/:hash/metadata` - Get evidence metadata
-- `GET /api/evidence/user/:address` - List user's evidence
-
-### System
-- `GET /api/health` - Server health check
-- `POST /api/pin-metadata` - Pin additional metadata
-
-## Smart Contract Functions
-
-### Evidence Submission
-- `submitEvidence()` - Store evidence on blockchain
-- `getEvidence()` - Retrieve evidence details
-- `getUserEvidences()` - Get user's evidence list
-
-### Access Control
-- `requestAccess()` - Request evidence access
-- `grantAccess()` - Grant user access
-- `revokeAccess()` - Revoke user access
-- `getPermissionRequests()` - View pending requests
-
-## Development Notes
-
-### File Structure
-```
-src/
-├── components/          # React components
-├── contracts/          # Smart contract ABI
-├── hooks/             # Custom React hooks
-├── services/          # API service layer
-├── types/             # TypeScript definitions
-└── App.tsx           # Main application
-
-server/
-└── server.js         # Express backend
-
-contracts/
-└── EvidenceStorage.sol # Solidity smart contract
+### 1. Project Setup
+```bash
+# Install dependencies
+npm install
 ```
 
-### Key Components
-- `WalletConnect`: MetaMask integration
-- `EvidenceUpload`: File upload and submission
-- `EvidenceList`: Display user's evidence
-- `useWallet`: Wallet state management
-- `useContract`: Smart contract interaction
+### 2. Environment Configuration
+Create a `.env` file in the root directory and add your credentials. You can use `.env.example` as a template.
 
-## Security Considerations
+```bash
+cp .env.example .env
+```
 
-1. **Private Keys**: Never commit private keys or sensitive data
-2. **Network Security**: Use HTTPS in production
-3. **Input Validation**: All inputs are validated client and server-side
-4. **File Types**: Restrict allowed file types for security
-5. **Rate Limiting**: Implement API rate limiting in production
-6. **IPFS Pinning**: Ensure evidence remains available via pinning
+**Required Variables:**
+- `PINATA_API_KEY`: Your Pinata API Key.
+- `PINATA_SECRET_API_KEY`: Your Pinata Secret Key.
+- `VITE_CONTRACT_ADDRESS`: The address of your deployed smart contract.
+- `VITE_NETWORK_ID`: The chain ID of your Ethereum network (e.g., `5777` for Ganache).
 
-## Production Deployment
+### 3. Backend Setup
+The backend handles file encryption and IPFS pinning.
 
-### Backend
-- Use environment variables for all configuration
-- Implement proper logging and monitoring
-- Set up SSL/TLS certificates
-- Configure firewall and security groups
+```bash
+# Start the server
+npm run server
+```
 
-### Frontend
-- Build optimized production bundle
-- Configure CDN for static assets
-- Set up monitoring and analytics
+The server will be running on `http://localhost:5000`.
 
-### Smart Contract
-- Deploy to mainnet or appropriate testnet
-- Verify contract source code on Etherscan
-- Set up event monitoring
+### 4. Frontend Setup
+The frontend provides the user interface for interacting with the blockchain and managing evidence.
 
-## Contributing
+```bash
+# In a new terminal window
+npm run dev
+```
 
-1. Fork the repository
-2. Create feature branch
-3. Implement changes with tests
-4. Submit pull request with detailed description
+The application will be available at `http://localhost:5173`.
 
-## License
+## ⛓ Smart Contract Deployment
 
-This project is licensed under the MIT License. See LICENSE file for details.
+If you are using a custom contract, follow these steps:
+1. Open [Remix IDE](https://remix.ethereum.org/).
+2. Copy the content from `contracts/EvidenceStorage.sol`.
+3. Compile and deploy the contract to your network.
+4. Copy the deployed contract address and update `VITE_CONTRACT_ADDRESS` in your `.env`.
 
-## Support
+## 📖 Usage Guide
 
-For technical support or questions:
-- Create an issue on GitHub
-- Review documentation
-- Check existing solutions in issues
-
-## Disclaimer
-
-This software is provided as-is for educational and development purposes. Users are responsible for ensuring compliance with local laws and regulations regarding evidence handling and privacy.
+1. **Connect Wallet**: Click "Connect MetaMask" and approve the connection.
+2. **Submit Evidence**: Go to the "Submit Evidence" tab, upload your file, and confirm the transaction.
+3. **Manage Access**: In "My Evidence", you can see your submissions and manage who has permission to view them.
+4. **View Evidence**: Authorized users can request access and view evidence once approved.
